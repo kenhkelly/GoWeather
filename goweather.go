@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"io/ioutil"
+	"net/url"
 	"encoding/json"
 	"os"
 )
@@ -17,7 +17,7 @@ func main() {
 
 	arg := os.Args[1]
 
-	url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s&units=imperial", arg)
+	url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s&units=imperial", url.QueryEscape(arg))
 
 	resp, err := http.Get(url)
 	if err != nil {
@@ -25,11 +25,6 @@ func main() {
 		os.Exit(3)
 	}
 	defer resp.Body.Close()
-	body, readErr := ioutil.ReadAll(resp.Body)
-	if readErr != nil {
-		fmt.Println("Read error")
-		os.Exit(3)
-	}
 
 	type WeatherResponse struct {
 		Main struct {
@@ -44,8 +39,8 @@ func main() {
 
 	var f WeatherResponse
 
-	errr := json.Unmarshal(body, &f)
-	if errr != nil {
+	err = json.NewDecoder(resp.Body).Decode(&f)
+	if err != nil {
 		fmt.Println("Failed to parse body")
 		os.Exit(3)
 	}
