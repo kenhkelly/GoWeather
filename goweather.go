@@ -17,7 +17,7 @@ func main() {
 
 	arg := os.Args[1]
 
-	url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s&units=imperial", url.QueryEscape(arg))
+	url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?zip=%s&units=imperial", url.QueryEscape(arg))
 
 	resp, err := http.Get(url)
 	if err != nil {
