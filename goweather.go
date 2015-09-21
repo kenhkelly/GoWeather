@@ -50,9 +50,37 @@ func init() {
 	} else if val != "" {
 		key = "q"
 	} else {
-		exitHelp()
+		zip, err := determineZip()
+		if err != nil {
+			exitHelp()
+		}
+		key = "zip"
+		val = zip
 	}
 
+}
+
+func determineZip() (string, error) {
+	resp, err := http.Get("http://ipinfo.io/geo")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	var info struct {
+		Zip string `json:"postal"`
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&info)
+	if err != nil {
+		return "", err
+	}
+
+	if info.Zip == "" {
+		return "", fmt.Errorf("unable to determine zip code")
+	}
+
+	return info.Zip, nil
 }
 
 func escape(s string) string {
