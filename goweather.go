@@ -1,50 +1,113 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
-	"encoding/json"
 	"os"
+	"strconv"
 )
 
-func main() {
+const (
+	API = "http://api.openweathermap.org/data/2.5/weather"
+)
 
-	if len(os.Args) < 2 {
-		fmt.Println("Need to enter zip code")
-		os.Exit(3)
+var (
+	key  string
+	val  string
+	unit string
+)
+
+func help() {
+	fmt.Printf("Usage: goweather [flags] location\n")
+	fmt.Printf("location: city name or zip code\nflags:\n")
+	flag.PrintDefaults()
+}
+
+func exitHelp() {
+	help()
+	os.Exit(3)
+}
+
+func init() {
+
+	flag.Usage = help
+
+	flag.StringVar(&unit, "unit", "imperial", "Imperial or metric units of measurement")
+	flag.Parse()
+
+	val = flag.Arg(0)
+	_, err := strconv.Atoi(val)
+
+	if err == nil {
+		if len(val) != 5 {
+			exitHelp()
+		}
+		key = "zip"
+	} else if val != "" {
+		key = "q"
+	} else {
+		exitHelp()
 	}
+fmt.Println(key, val, "\n\n")
 
-	arg := os.Args[1]
+}
 
-	url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%s&units=imperial", url.QueryEscape(arg))
+func escape(s string) string {
+	return url.QueryEscape(s)
+}
 
-	resp, err := http.Get(url)
+func sendRequest() {
+
+	params := fmt.Sprintf("?%s=%s&units=%s", key, escape(val), escape(unit))
+	resp, err := http.Get(API + params)
 	if err != nil {
 		fmt.Println("Failed to get url")
 		os.Exit(3)
 	}
 	defer resp.Body.Close()
-
-	type WeatherResponse struct {
-		Main struct {
-			Temp     float64
-			Temp_Min float64
-			Temp_Max float64
-		}
-		Weather []struct {
-			Description string
-		}
+	if resp.StatusCode != 200 {
+		fmt.Println("Failed to get data")
+		os.Exit(3)
 	}
+
+	handleResponse(resp.Body)
+
+}
+
+type WeatherResponse struct {
+	Main struct {
+		Temp     float64
+		Temp_Min float64
+		Temp_Max float64
+	}
+	Weather []struct {
+		Description string
+	}
+}
+
+func handleResponse(s io.ReadCloser ) {
 
 	var f WeatherResponse
 
-	err = json.NewDecoder(resp.Body).Decode(&f)
+	err := json.NewDecoder(s).Decode(&f)
 	if err != nil {
 		fmt.Println("Failed to parse body")
 		os.Exit(3)
 	}
 
-	fmt.Printf("%-15s%-15s%-15s%-20s\n", "Current temp", "Today's high", "Today's low", "Condition")
-	fmt.Printf("%-15.2f%-15.2f%-15.2f%-20s\n\n", f.Main.Temp, f.Main.Temp_Max, f.Main.Temp_Min, f.Weather[0].Description)
+	row_1 := "%-15s%-15s%-15s%-20s\n"
+	row_2 := "%-15.2f%-15.2f%-15.2f%-20s\n\n"
+
+	fmt.Printf(row_1, "Current temp", "Today's high", "Today's low", "Condition")
+	fmt.Printf(row_2, f.Main.Temp, f.Main.Temp_Max, f.Main.Temp_Min, f.Weather[0].Description)
+
 }
+
+func main() {
+	sendRequest()
+}
+
