@@ -107,13 +107,13 @@ func sendRequest() {
 
 type WeatherResponse struct {
 	Main struct {
-		Temp     float64
-		Temp_Min float64
-		Temp_Max float64
-	}
+		Temp    float64 `json:"temp"`
+		TempMin float64 `json:"temp_min"`
+		TempMax float64 `json:"temp_max"`
+	} `json:"main"`
 	Weather []struct {
-		Description string
-	}
+		Description string `json:"description"`
+	} `json:"weather"`
 }
 
 func handleResponse(s io.ReadCloser ) {
@@ -130,7 +130,7 @@ func handleResponse(s io.ReadCloser ) {
 	row_2 := "%-15.2f%-15.2f%-15.2f%-20s\n\n"
 
 	fmt.Printf(row_1, "Current temp", "Today's high", "Today's low", "Condition")
-	fmt.Printf(row_2, f.Main.Temp, f.Main.Temp_Max, f.Main.Temp_Min, f.Weather[0].Description)
+	fmt.Printf(row_2, f.Main.Temp, f.Main.TempMax, f.Main.TempMin, f.Weather[0].Description)
 
 }
 
