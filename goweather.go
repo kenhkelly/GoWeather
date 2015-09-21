@@ -52,7 +52,6 @@ func init() {
 	} else {
 		exitHelp()
 	}
-fmt.Println(key, val, "\n\n")
 
 }
 
