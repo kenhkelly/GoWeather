@@ -73,7 +73,10 @@ Thursday, September 24, 2015
 
 Version | Change
 --------|----------
-v2.0    | Added the days and help flag. 
-v1.2    | Added auto-detection of location when location is not provided
+[v2.0]  | Added the days and help flag. 
+[v1.2]  | Added auto-detection of location when location is not provided
 v1.1    | Refactor put in place
 v1.0    | Initial version, provided the weather
+
+[v2.0]: https://github.com/kenhkelly/GoWeather/tree/v2.0
+[v1.2]: https://github.com/kenhkelly/GoWeather/tree/v1.2
