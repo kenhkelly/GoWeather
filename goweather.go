@@ -62,7 +62,7 @@ func init() {
 			exitHelp()
 		}
 		key = "zip"
-	} else if val != "" {
+	} else if len(val) != 0 {
 		key = "q"
 	} else {
 		zip, err := determineZip()
@@ -90,8 +90,6 @@ func determineZip() (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-
-	// var info info
 
 	err = json.NewDecoder(resp.Body).Decode(&location)
 	if err != nil {
@@ -126,12 +124,7 @@ func sendRequest() {
 }
 
 type WeatherResponse struct {
-	City CityType
 	List []ListType
-}
-type CityType struct {
-	Name string
-	Country string
 }
 type ListType struct {
 	Dt int64
