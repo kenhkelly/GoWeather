@@ -17,10 +17,11 @@ const (
 )
 
 var (
-	key  string
-	val  string
-	unit string
-	days int
+	key      string
+	val      string
+	unit     string
+	days     int
+	emptyLoc bool
 )
 
 func help() {
@@ -38,7 +39,7 @@ func init() {
 
 	flag.Usage = help
 
-	flag.StringVar(&unit, "unit", "imperial", "Imperial or metric units of measurement")
+	flag.StringVar(&unit, "unit", "imperial", "Imperial, metric, or kelvin units of measurement")
 	flag.IntVar(&days, "days", 1, "Shows forecasts for number of days (1-16)" )
 	helpPtr := flag.Bool("help", false, "Shows this help")
 	flag.Parse()
@@ -46,6 +47,16 @@ func init() {
 	if *helpPtr == true {
 		help()
 		os.Exit(0)
+	}
+
+	if days < 1 || days > 16 {
+		fmt.Println("Days must be between 1 and 16")
+		exitHelp()
+	}
+
+	if unit != "imperial" && unit != "metric" && unit != "kelvin" {
+		fmt.Println("Units must be imperial, metric, or kelvin")
+		exitHelp()
 	}
 
 	val = flag.Arg(0)
@@ -56,7 +67,7 @@ func init() {
 			exitHelp()
 		}
 		key = "zip"
-	} else if val != "" {
+	} else if len(val) != 0 {
 		key = "q"
 	} else {
 		zip, err := determineZip()
@@ -65,9 +76,18 @@ func init() {
 		}
 		key = "zip"
 		val = zip
+		emptyLoc = true
 	}
 
 }
+
+type info struct {
+	Zip     string `json:"postal"`
+	City    string `json:"city"`
+	Region  string `json:"region"`
+	Country string `json:"country"`
+}
+var location info
 
 func determineZip() (string, error) {
 	resp, err := http.Get("http://ipinfo.io/geo")
@@ -76,20 +96,16 @@ func determineZip() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	var info struct {
-		Zip string `json:"postal"`
-	}
-
-	err = json.NewDecoder(resp.Body).Decode(&info)
+	err = json.NewDecoder(resp.Body).Decode(&location)
 	if err != nil {
 		return "", err
 	}
 
-	if info.Zip == "" {
+	if location.Zip == "" {
 		return "", fmt.Errorf("unable to determine zip code")
 	}
 
-	return info.Zip, nil
+	return location.Zip, nil
 }
 
 func escape(s string) string {
@@ -141,6 +157,10 @@ func handleResponse(s io.ReadCloser ) {
 	if err != nil {
 		fmt.Println("Failed to parse body", err)
 		os.Exit(3)
+	}
+
+	if emptyLoc {
+		fmt.Printf("Determined location: %s, %s, %s\n", location.City, location.Region, location.Zip)
 	}
 
 	for i := range f.List {
