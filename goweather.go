@@ -9,16 +9,18 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"time"
 )
 
 const (
-	API = "http://api.openweathermap.org/data/2.5/weather"
+	API = "http://api.openweathermap.org/data/2.5/forecast/daily"
 )
 
 var (
 	key  string
 	val  string
 	unit string
+	days int
 )
 
 func help() {
@@ -37,7 +39,14 @@ func init() {
 	flag.Usage = help
 
 	flag.StringVar(&unit, "unit", "imperial", "Imperial or metric units of measurement")
+	flag.IntVar(&days, "days", 1, "Shows forecasts for number of days (1-16)" )
+	helpPtr := flag.Bool("help", false, "Shows this help")
 	flag.Parse()
+
+	if *helpPtr == true {
+		help()
+		os.Exit(0)
+	}
 
 	val = flag.Arg(0)
 	_, err := strconv.Atoi(val)
@@ -88,8 +97,7 @@ func escape(s string) string {
 }
 
 func sendRequest() {
-
-	params := fmt.Sprintf("?%s=%s&units=%s", key, escape(val), escape(unit))
+	params := fmt.Sprintf("?%s=%s&units=%s&cnt=%d", key, escape(val), escape(unit), days)
 	resp, err := http.Get(API + params)
 	if err != nil {
 		fmt.Println("Failed to get url")
@@ -102,39 +110,49 @@ func sendRequest() {
 	}
 
 	handleResponse(resp.Body)
-
 }
 
 type WeatherResponse struct {
-	Main struct {
-		Temp    float64 `json:"temp"`
-		TempMin float64 `json:"temp_min"`
-		TempMax float64 `json:"temp_max"`
-	} `json:"main"`
-	Weather []struct {
-		Description string `json:"description"`
-	} `json:"weather"`
+	List []ListType
+}
+type ListType struct {
+	Dt int64
+	Temp TempType
+	Weather []WeatherType
+}
+type TempType struct {
+	Day float64
+	Min float64
+	Max float64
+}
+type WeatherType struct {
+	Description string
+}
+
+func parseTime(timestamp int64) string {
+	t := time.Unix(timestamp, 0)
+	return fmt.Sprintf("%s, %s %02d, %d", t.Weekday(), t.Month(), t.Day(), t.Year())
 }
 
 func handleResponse(s io.ReadCloser ) {
-
 	var f WeatherResponse
 
 	err := json.NewDecoder(s).Decode(&f)
 	if err != nil {
-		fmt.Println("Failed to parse body")
+		fmt.Println("Failed to parse body", err)
 		os.Exit(3)
 	}
 
-	row_1 := "%-15s%-15s%-15s%-20s\n"
-	row_2 := "%-15.2f%-15.2f%-15.2f%-20s\n\n"
+	for i := range f.List {
+		row_1 := " %-15s%-15s%-15s%-20s\n"
+		row_2 := " %-15.2f%-15.2f%-15.2f%-20s\n\n"
 
-	fmt.Printf(row_1, "Current temp", "Today's high", "Today's low", "Condition")
-	fmt.Printf(row_2, f.Main.Temp, f.Main.TempMax, f.Main.TempMin, f.Weather[0].Description)
-
+		fmt.Println(parseTime(f.List[i].Dt))
+		fmt.Printf(row_1, "Current temp", "Today's high", "Today's low", "Condition")
+		fmt.Printf(row_2, f.List[i].Temp.Day, f.List[i].Temp.Max, f.List[i].Temp.Min, f.List[i].Weather[0].Description)
+	}
 }
 
 func main() {
 	sendRequest()
 }
-
