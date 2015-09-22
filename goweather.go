@@ -39,7 +39,7 @@ func init() {
 
 	flag.Usage = help
 
-	flag.StringVar(&unit, "unit", "imperial", "Imperial or metric units of measurement")
+	flag.StringVar(&unit, "unit", "imperial", "Imperial, metric, or kelvin units of measurement")
 	flag.IntVar(&days, "days", 1, "Shows forecasts for number of days (1-16)" )
 	helpPtr := flag.Bool("help", false, "Shows this help")
 	flag.Parse()
@@ -51,6 +51,11 @@ func init() {
 
 	if days < 1 || days > 16 {
 		fmt.Println("Days must be between 1 and 16")
+		exitHelp()
+	}
+
+	if unit != "imperial" && unit != "metric" && unit != "kelvin" {
+		fmt.Println("Units must be imperial, metric, or kelvin")
 		exitHelp()
 	}
 
