@@ -17,10 +17,11 @@ const (
 )
 
 var (
-	key  string
-	val  string
-	unit string
-	days int
+	key      string
+	val      string
+	unit     string
+	days     int
+	emptyLoc bool
 )
 
 func help() {
@@ -65,9 +66,18 @@ func init() {
 		}
 		key = "zip"
 		val = zip
+		emptyLoc = true
 	}
 
 }
+
+type info struct {
+	Zip     string `json:"postal"`
+	City    string `json:"city"`
+	Region  string `json:"region"`
+	Country string `json:"country"`
+}
+var location info
 
 func determineZip() (string, error) {
 	resp, err := http.Get("http://ipinfo.io/geo")
@@ -76,20 +86,18 @@ func determineZip() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	var info struct {
-		Zip string `json:"postal"`
-	}
+	// var info info
 
-	err = json.NewDecoder(resp.Body).Decode(&info)
+	err = json.NewDecoder(resp.Body).Decode(&location)
 	if err != nil {
 		return "", err
 	}
 
-	if info.Zip == "" {
+	if location.Zip == "" {
 		return "", fmt.Errorf("unable to determine zip code")
 	}
 
-	return info.Zip, nil
+	return location.Zip, nil
 }
 
 func escape(s string) string {
@@ -113,7 +121,12 @@ func sendRequest() {
 }
 
 type WeatherResponse struct {
+	City CityType
 	List []ListType
+}
+type CityType struct {
+	Name string
+	Country string
 }
 type ListType struct {
 	Dt int64
@@ -141,6 +154,10 @@ func handleResponse(s io.ReadCloser ) {
 	if err != nil {
 		fmt.Println("Failed to parse body", err)
 		os.Exit(3)
+	}
+
+	if emptyLoc {
+		fmt.Printf("Determined location: %s, %s, %s\n", location.City, location.Region, location.Zip)
 	}
 
 	for i := range f.List {
