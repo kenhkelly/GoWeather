@@ -55,18 +55,19 @@ Monday, September 28, 2015
 ```
 
 ```
-$ ./goweather -days=3 -unit=celcius 10001
+$ ./goweather -days=3 -unit=metric 10001
 Tuesday, September 22, 2015
  Current temp   Today's high   Today's low    Condition
- 292.86         295.06         287.97         overcast clouds
+ 19.08          21.35          14.34          overcast clouds
 
 Wednesday, September 23, 2015
  Current temp   Today's high   Today's low    Condition
- 294.03         297.54         284.80         few clouds
+ 20.56          24.10          11.25          few clouds
 
 Thursday, September 24, 2015
  Current temp   Today's high   Today's low    Condition
- 295.01         297.71         285.21         scattered clouds
+ 21.84          24.58          11.96          scattered clouds
+
 ```
 
 ### Changelog
