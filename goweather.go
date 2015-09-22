@@ -49,6 +49,11 @@ func init() {
 		os.Exit(0)
 	}
 
+	if days < 1 || days > 16 {
+		fmt.Println("Days must be between 1 and 16")
+		exitHelp()
+	}
+
 	val = flag.Arg(0)
 	_, err := strconv.Atoi(val)
 
