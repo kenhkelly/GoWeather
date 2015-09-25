@@ -79,12 +79,14 @@ Friday, September 25, 2015
 
 Version | Change
 --------|----------
+[v2.2]  | Add ability to use wind with a flag <br> Reorder the flags in the code and add descriptions to the flags <br> Remove the unnecessary help flag
 [v2.1]  | Various bug fixes. 
 [v2.0]  | Added the days and help flag. 
 [v1.2]  | Added auto-detection of location when location is not provided
 v1.1    | Refactor put in place
 v1.0    | Initial version, provided the weather
 
+[v2.2]: https://github.com/kenhkelly/GoWeather/tree/v2.2
 [v2.1]: https://github.com/kenhkelly/GoWeather/tree/v2.1
 [v2.0]: https://github.com/kenhkelly/GoWeather/tree/v2.0
 [v1.2]: https://github.com/kenhkelly/GoWeather/tree/v1.2
