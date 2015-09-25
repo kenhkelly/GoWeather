@@ -66,7 +66,13 @@ Wednesday, September 23, 2015
 Thursday, September 24, 2015
  Current temp   Today's high   Today's low    Condition
  21.84          24.58          11.96          scattered clouds
+```
 
+```
+$ ./goweather -wind=true -days=1 10001
+Friday, September 25, 2015
+ Current temp   Today's high   Today's low    Condition           Wind speed     Wind direction
+ 72.18          72.18          60.15          broken clouds       3.43           East
 ```
 
 ### Changelog
