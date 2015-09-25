@@ -10,8 +10,8 @@
 
 *Options*
 
-- -days=1
-- -unit=imperial
+- -days=1        "Shows forecasts for number of days (1-16)"
+- -unit=imperial "Imperial, metric, or kelvin units of measurement"
 
 *Examples*:
 

@@ -39,8 +39,8 @@ func init() {
 
 	flag.Usage = help
 
-	flag.StringVar(&unit, "unit", "imperial", "Imperial, metric, or kelvin units of measurement")
 	flag.IntVar(&days, "days", 1, "Shows forecasts for number of days (1-16)" )
+	flag.StringVar(&unit, "unit", "imperial", "Imperial, metric, or kelvin units of measurement")
 	flag.Parse()
 
 	if days < 1 || days > 16 {
