@@ -12,7 +12,6 @@
 
 - -days=1
 - -unit=imperial
-- -help
 
 *Examples*:
 

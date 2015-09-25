@@ -41,13 +41,7 @@ func init() {
 
 	flag.StringVar(&unit, "unit", "imperial", "Imperial, metric, or kelvin units of measurement")
 	flag.IntVar(&days, "days", 1, "Shows forecasts for number of days (1-16)" )
-	helpPtr := flag.Bool("help", false, "Shows this help")
 	flag.Parse()
-
-	if *helpPtr == true {
-		help()
-		os.Exit(0)
-	}
 
 	if days < 1 || days > 16 {
 		fmt.Println("Days must be between 1 and 16")
