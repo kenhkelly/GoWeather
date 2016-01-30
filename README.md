@@ -1,6 +1,6 @@
 #GoWeather 
 
-Version 2.0
+Version 3.0
 
 *Note: you will need an API key, you may register here: [https://developer.forecast.io/register](https://developer.forecast.io/register). Copy goweather.properties.sample to HOMEDIR/.goweather/goweather.properties and fill in your API key*
 
