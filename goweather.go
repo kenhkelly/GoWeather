@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	version  string = "3.0"
+	version  string = "3.1"
 	forecast bool
 )
 
@@ -85,4 +85,5 @@ func main() {
 		fmt.Println(dail_str)
 	}
 
+	fmt.Println("")
 }
