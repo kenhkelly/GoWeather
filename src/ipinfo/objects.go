@@ -10,6 +10,8 @@ type Info struct {
 	Region  string `json:"region"`
 	Country string `json:"country"`
 	Loc     string `json:"loc"`
+	Lat     string `json:"lat"`
+	Lng     string `json:"lng"`
 }
 
 type Location Info

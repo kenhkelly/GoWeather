@@ -7,26 +7,27 @@ import (
 	"strings"
 )
 
-func GetLocation() (string, string, error) {
+func GetLocation() (location Location, err error) {
 
 	resp, err := http.Get(API_URL)
 	if err != nil {
-		return "", "", err
+		return
 	}
 	defer resp.Body.Close()
 
-	var location Location
 	err = json.NewDecoder(resp.Body).Decode(&location)
 	if err != nil {
-		return "", "", err
+		return
 	}
 
 	if location.Loc == "" {
-		return "", "", fmt.Errorf("unable to determine location")
+		return location, fmt.Errorf("unable to determine location")
 	}
 
 	latLng := strings.Split(location.Loc, ",")
+	location.Lat = latLng[0]
+	location.Lng = latLng[1]
 
-	return latLng[0], latLng[1], nil
+	return location, nil
 
 }

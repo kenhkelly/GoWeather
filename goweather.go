@@ -42,12 +42,13 @@ func main() {
 
 	key := objects.GetApiKey()
 
-	lat, lng, err := i.GetLocation()
+	location, err := i.GetLocation()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fc, err := f.GetForecast(key, lat, lng)
+	fmt.Printf("\n      Found you in: %s, %s\n", location.City, location.Region)
+	fc, err := f.GetForecast(key, location.Lat, location.Lng)
 	if err != nil {
 		fmt.Println("An error occured:", err)
 		return
