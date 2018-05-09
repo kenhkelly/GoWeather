@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	f "forecast"
-	i "ipinfo"
-	"objects"
 	"os"
 	"time"
+
+	f "github.com/kenhkelly/GoWeather/src/forecast"
+	i "github.com/kenhkelly/GoWeather/src/ipinfo"
+	"github.com/kenhkelly/GoWeather/src/objects"
 )
 
 var (
@@ -46,7 +47,11 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fc, _ := f.GetForecast(key, lat, lng)
+	fc, err := f.GetForecast(key, lat, lng)
+	if err != nil {
+		fmt.Println("An error occured:", err)
+		return
+	}
 	cur := fc.Currently
 	dail := fc.Daily
 
