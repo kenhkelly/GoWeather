@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	version  string = "3.1"
+	version  string = "3.2"
 	forecast bool
 )
 
